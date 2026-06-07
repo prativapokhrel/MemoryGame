@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import Card from "./Card";
 import GameOver from "./GameOver";
 import GamePlay from "./GamePlay";
 
@@ -16,7 +15,6 @@ export default function MemoryGame() {
   const timeoutRef = useRef(null);
 
   function handleClick(assetId) {
-    // if more than 2 assets have isVisible == true
     const currentAsset = assets.find((asset) => asset.id === assetId);
     if (currentAsset?.state === "visible") {
       return;
@@ -77,28 +75,21 @@ export default function MemoryGame() {
     }
   }
 
-  function handleRestart() {
-    setAssets(assets.map((a) => ({ ...a, state: "hidden" })));
+  function shuffleArray(array) {
+    const arrayCopy = [...array];
+    for (let i = arrayCopy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = arrayCopy[i];
+      arrayCopy[i] = arrayCopy[j];
+      arrayCopy[j] = temp;
+    }
+    return arrayCopy;
   }
-  // kina vayena map??????????????
-  // translation ko document herne  🤔🤔
-  // const shuffledAssets = assets.map((a, currentIndex) => {
-  //   const newIndex = Math.floor(Math.random() * 5);
-  //   assets[currentIndex] = assets[newIndex];
-  //   assets[newIndex] = a;
-  //   return assets;
-  // });
+  function handleRestart() {
+    const shuffledAssets = shuffleArray(assets);
+    setAssets(shuffledAssets.map((a) => ({ ...a, state: "hidden" })));
+  }
 
-  //   const assetCopy = [...assets];
-  //   for (let i = 0; i < assetCopy.length; i++) {
-  //     const newIndex = Math.floor(Math.random() * 5);
-  //     const currentValue = assetCopy[i];
-  //     assetCopy[i] = assetCopy[newIndex];
-  //     assetCopy[newIndex] = currentValue;
-  //   }
-
-  //   setAssets(assetCopy);
-  // }
   const removedAssets = assets.filter((ua) => ua.state === "removed").length;
   const isGameOver = removedAssets === assets.length;
   if (isGameOver) {
