@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function Card({ cardInfo, handleClick }) {
+export default function Asset({ cardInfo, handleClick }) {
   return (
     <div className="w-25 h-25 " onClick={() => handleClick(cardInfo.id)}>
       {cardInfo.state != "removed" && (

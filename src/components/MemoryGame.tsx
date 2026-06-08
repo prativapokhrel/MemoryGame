@@ -1,17 +1,27 @@
 import { useRef, useState } from "react";
 import GameOver from "./GameOver";
 import GamePlay from "./GamePlay";
-// option for grid board
-// fix bug
-export default function MemoryGame() {
-  const [assets, setAssets] = useState([
-    { id: 2, value: "🐘", state: "hidden" },
-    { id: 3, value: "🐟", state: "hidden" },
-    { id: 4, value: "🐘", state: "hidden" },
-    { id: 5, value: "🦋", state: "hidden" },
-    { id: 6, value: "🐟", state: "hidden" },
-    { id: 1, value: "🦋", state: "hidden" },
-  ]);
+
+const emojis = ["🦋", "🐘", "🐟", "🌼", "🌻", "🦜", "🦓", "🐞", "🐷", "🐙"];
+
+export default function MemoryGame({ numberOfCards }) {
+  const initialState = [];
+  let emojiIndex = 0;
+  for (let i = 0; i < numberOfCards; i += 2) {
+    initialState.push({
+      id: i + 1,
+      value: emojis[emojiIndex],
+      state: "hidden",
+    });
+    initialState.push({
+      id: i + 2,
+      value: emojis[emojiIndex],
+      state: "hidden",
+    });
+    emojiIndex++;
+  }
+
+  const [assets, setAssets] = useState(shuffleArray(initialState));
 
   const timeoutRef = useRef(null);
 
@@ -37,9 +47,11 @@ export default function MemoryGame() {
     );
 
     if (visibleAssets.length > 2) {
-      // if (!matched) {
-      // }
-      // clearTimeout(timeoutRef.current);
+      const matchedd = visibleAssets[0].value === visibleAssets[1].value;
+
+      if (matchedd) {
+        clearTimeout(timeoutRef.current);
+      }
       const updatedAssets2 = updatedAssets.map((va) => {
         if (va.id != assetId) {
           if (va.state != "removed") {
@@ -78,13 +90,12 @@ export default function MemoryGame() {
         });
         timeoutRef.current = setTimeout(() => {
           setAssets(allAssets);
-        }, 2000);
+        }, 1000);
       }
     } else {
       setAssets(updatedAssets);
     }
   }
-
   function shuffleArray(array) {
     const arrayCopy = [...array];
     for (let i = arrayCopy.length - 1; i > 0; i--) {
@@ -96,7 +107,7 @@ export default function MemoryGame() {
     return arrayCopy;
   }
   function handleRestart() {
-    const shuffledAssets = shuffleArray(assets);
+    shuffleArray(assets);
     setAssets(assets.map((a) => ({ ...a, state: "hidden" })));
   }
 

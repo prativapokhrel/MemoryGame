@@ -1,9 +1,9 @@
-import Card from "./Card";
+import Asset from "./Asset";
 export default function GamePlay({ assets, handleClick }) {
   return (
     <>
       {assets.map((cardInfo) => (
-        <Card cardInfo={cardInfo} handleClick={handleClick} />
+        <Asset cardInfo={cardInfo} handleClick={handleClick} />
       ))}
     </>
   );
