@@ -1,11 +1,6 @@
 import "./App.css";
 import MemoryGame from "./components/MemoryGame";
 
-// congratulations confetti
-
-// cleanup code
-// restart game with shuffle
-
 function App() {
   return (
     <>

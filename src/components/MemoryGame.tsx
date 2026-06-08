@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
 import GameOver from "./GameOver";
 import GamePlay from "./GamePlay";
-
+// option for grid board
+// fix bug
 export default function MemoryGame() {
   const [assets, setAssets] = useState([
     { id: 2, value: "🐘", state: "hidden" },
@@ -16,7 +17,10 @@ export default function MemoryGame() {
 
   function handleClick(assetId) {
     const currentAsset = assets.find((asset) => asset.id === assetId);
-    if (currentAsset?.state === "visible") {
+    if (
+      currentAsset?.state === "visible" ||
+      currentAsset?.state === "removed"
+    ) {
       return;
     }
 
@@ -33,10 +37,16 @@ export default function MemoryGame() {
     );
 
     if (visibleAssets.length > 2) {
-      clearTimeout(timeoutRef.current);
+      // if (!matched) {
+      // }
+      // clearTimeout(timeoutRef.current);
       const updatedAssets2 = updatedAssets.map((va) => {
         if (va.id != assetId) {
-          return { ...va, state: "hidden" };
+          if (va.state != "removed") {
+            return { ...va, state: "hidden" };
+          } else {
+            return va;
+          }
         } else {
           return va;
         }
@@ -44,8 +54,8 @@ export default function MemoryGame() {
       setAssets(updatedAssets2);
     } else if (visibleAssets.length == 2) {
       setAssets(updatedAssets);
-
       const matched = visibleAssets[0].value === visibleAssets[1].value;
+
       if (matched) {
         timeoutRef.current = setTimeout(() => {
           setAssets(
@@ -87,7 +97,7 @@ export default function MemoryGame() {
   }
   function handleRestart() {
     const shuffledAssets = shuffleArray(assets);
-    setAssets(shuffledAssets.map((a) => ({ ...a, state: "hidden" })));
+    setAssets(assets.map((a) => ({ ...a, state: "hidden" })));
   }
 
   const removedAssets = assets.filter((ua) => ua.state === "removed").length;
