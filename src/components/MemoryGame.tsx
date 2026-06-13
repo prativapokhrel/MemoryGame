@@ -4,6 +4,8 @@ import GamePlay from "./GamePlay";
 
 const emojis = ["🦋", "🐘", "🐟", "🌼", "🌻", "🦜", "🦓", "🐞", "🐷", "🐙"];
 
+// moves and misses
+
 export default function MemoryGame({ numberOfCards }) {
   const initialState = [];
   let emojiIndex = 0;
@@ -23,7 +25,8 @@ export default function MemoryGame({ numberOfCards }) {
 
   const [assets, setAssets] = useState(shuffleArray(initialState));
 
-  const timeoutRef = useRef(null);
+  const timeoutRef1 = useRef(null);
+  const timeoutRef2 = useRef(null);
 
   function handleClick(assetId) {
     const currentAsset = assets.find((asset) => asset.id === assetId);
@@ -41,17 +44,48 @@ export default function MemoryGame({ numberOfCards }) {
         return asset;
       }
     });
+    setAssets(updatedAssets);
 
     const visibleAssets = updatedAssets.filter(
       (asset) => asset.state === "visible",
     );
+    if (visibleAssets.length == 2) {
+      const matched = visibleAssets[0].value === visibleAssets[1].value;
 
-    if (visibleAssets.length > 2) {
-      const matchedd = visibleAssets[0].value === visibleAssets[1].value;
-
-      if (matchedd) {
-        clearTimeout(timeoutRef.current);
+      if (matched) {
+        console.log(
+          "MATCHED?? ",
+          visibleAssets[0].value,
+          visibleAssets[1].value,
+        );
+        timeoutRef1.current = setTimeout(() => {
+          setAssets((prevAssets) => {
+            return prevAssets.map((ua) => {
+              if (visibleAssets.find((a) => a.id === ua.id)) {
+                return { ...ua, state: "removed" };
+              } else {
+                return ua;
+              }
+            });
+          });
+        }, 500);
+      } else {
+        timeoutRef2.current = setTimeout(() => {
+          setAssets((prevAssets) => {
+            return prevAssets.map((va) => {
+              if (
+                va.id === visibleAssets[0].id ||
+                va.id === visibleAssets[1].id
+              ) {
+                return { ...va, state: "hidden" };
+              } else {
+                return va;
+              }
+            });
+          });
+        }, 1000);
       }
+    } else if (visibleAssets.length > 2) {
       const updatedAssets2 = updatedAssets.map((va) => {
         if (va.id != assetId) {
           if (va.state != "removed") {
@@ -64,34 +98,6 @@ export default function MemoryGame({ numberOfCards }) {
         }
       });
       setAssets(updatedAssets2);
-    } else if (visibleAssets.length == 2) {
-      setAssets(updatedAssets);
-      const matched = visibleAssets[0].value === visibleAssets[1].value;
-
-      if (matched) {
-        timeoutRef.current = setTimeout(() => {
-          setAssets(
-            updatedAssets.map((ua) => {
-              if (visibleAssets.find((a) => a.id === ua.id)) {
-                return { ...ua, state: "removed" };
-              } else {
-                return ua;
-              }
-            }),
-          );
-        }, 500);
-      } else {
-        const allAssets = updatedAssets.map((va) => {
-          if (va.state === "visible") {
-            return { ...va, state: "hidden" };
-          } else {
-            return va;
-          }
-        });
-        timeoutRef.current = setTimeout(() => {
-          setAssets(allAssets);
-        }, 1000);
-      }
     } else {
       setAssets(updatedAssets);
     }
